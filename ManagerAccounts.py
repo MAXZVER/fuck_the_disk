@@ -10,7 +10,7 @@ class ManagerAccounts:
         self.get_accounts_from_json(path_to_json)
 
     def get_accounts_from_json(self, path_to_json):
-        accounts_info = list()
+        accounts_info = dict()
         users_info = list()
         if not os.path.exists(path_to_json):
             LogSystem.LogSystem.CRITICAL("File accounts json is not exist: " + path_to_json)
