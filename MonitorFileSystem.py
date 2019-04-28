@@ -2,10 +2,12 @@ import os
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
+
 def convert_path_to_unix(path):
     path = path.replace("\\\\", '/')
     path = path.replace("\\", '/')
     return path
+
 
 def change_path_to_remote(sync_dir, path_file, dir_name):
     list_path_append = []

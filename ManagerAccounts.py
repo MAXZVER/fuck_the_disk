@@ -2,6 +2,7 @@ import json
 import os
 import LogSystem
 import Account
+import uuid
 
 
 class ManagerAccounts:
@@ -77,6 +78,12 @@ class ManagerAccounts:
         return new_accounts
 
     def check_new_account(self, account_info):
+        """
+        Check exist accounts in initialize accounts for accounts info
+
+        :param account_info:
+        :return: True account is not initialize False this account is exist
+        """
         if len(self.accounts) == 0:
             return True
         if "hostname" in account_info:
@@ -101,7 +108,61 @@ class ManagerAccounts:
         return True
 
     def get_free_space(self):
+        """
+        Get free space for all storage's
+        :return: free_space in bytes
+        """
         free_space = 0
         for account in self.accounts:
             free_space += account.get_free_space()
         return free_space
+
+    def delete_file(self, local_path, remote_path, uuid_account):
+        """
+        Delete file from storage
+
+        :param local_path: File path in local storage
+        :param remote_path: File path in remote storage
+        :param uuid_account: UUID storage
+        :return: True if delete complete False for incomplete delete
+        """
+        for account in self.accounts:
+            if uuid_account == account.uuid_account:
+                if account.delete_file(local_path, remote_path):
+                    self.update_configuration()
+                    return True
+                return False
+        return False
+
+    def download_file(self, local_path, remote_path, uuid_account):
+        """
+        Download file from storage to local
+
+        :param local_path: File path in local storage
+        :param remote_path: File path in remote storage
+        :param uuid_account: UUID storage
+        :return: True if download complete False for incomplete download
+        """
+        for account in self.accounts:
+            if uuid_account == account.uuid_account:
+                return account.download_file(local_path, remote_path)
+        return False
+
+    def upload_file(self, local_path):
+        """
+        Upload file on server
+
+        :param local_path: File path in local storage
+        :return: Dict with 2 fields uuid is uuid storage for file
+        remote_path is path to upload file in the storage
+        """
+        size_file = os.path.getsize(local_path)
+        remote_path = os.path.basename(local_path)
+        for account in self.accounts:
+            if size_file < account.free_space():
+                if account.exist_file(remote_path):
+                    while account.exist_file(remote_path):
+                        remote_path = str(uuid.uuid4()) + "_" + remote_path
+                account.upload_file(local_path, remote_path)
+                self.update_configuration()
+                return {"uuid": account.uuid_account, "remote_path": remote_path}

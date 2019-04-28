@@ -1,0 +1,12 @@
+{
+  "filename_orig":"",
+  "filename_server":"",
+  "filename_backup_server":"",
+  "uuid_account":"",
+  "path_to_small_image":"",
+  "path_to_small_image_on_server":"",
+  "split_object":false,
+  "split_filename_server":[],
+  "size_object":50,
+  "publish_link":false
+}

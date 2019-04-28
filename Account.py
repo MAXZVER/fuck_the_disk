@@ -2,7 +2,8 @@ import Disk
 import LogSystem
 import uuid
 
-class Account:
+
+class Account(object):
     def __init__(self, account_info):
         if "hostname" in account_info:
             self.hostname = account_info["hostname"]
@@ -44,3 +45,36 @@ class Account:
 
     def get_free_space(self):
         return self.disk.get_free_space()
+
+    def exist_file(self, remote_path):
+        return self.disk.exist_file(remote_path)
+
+    def delete_file(self, local_path, remote_path):
+        if self.exist_file(remote_path):
+            self.disk.delete_file(remote_path)
+            self.free_space = self.get_free_space()
+            return True
+        else:
+            LogSystem.LogSystem.ERROR("Local file: " + local_path + " is not exist in remote storage " +
+                                      self.uuid_account + " for remote path " + remote_path)
+            return False
+
+    def upload_file(self, local_path, remote_path):
+        self.disk.upload_file(remote_path=remote_path, local_path=local_path)
+        self.free_space = self.get_free_space()
+
+    def download_file(self, local_path, remote_path):
+        if self.exist_file(remote_path):
+            self.disk.download_file(remote_path=remote_path, local_path=local_path)
+            return True
+        else:
+            LogSystem.LogSystem.ERROR("Local file: " + local_path + " is not exist in remote storage " +
+                                      self.uuid_account + " for remote path " + remote_path)
+            return False
+
+    def publish_file(self, remote_path):
+        return self.disk.publish_file(remote_path)
+
+    def unpublish_file(self, remote_path):
+        return self.disk.unpublish_file(remote_path)
+
